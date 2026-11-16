@@ -14,54 +14,12 @@ const MAX_SCALE = 100;
 const DEFAULT_SCALE = 100;
 
 const EFFECTS = {
-  none: {
-    filter: '',
-    min: 0,
-    max: 100,
-    step: 1,
-    start: 100,
-    unit: ''
-  },
-  chrome: {
-    filter: 'grayscale',
-    min: 0,
-    max: 1,
-    step: 0.1,
-    start: 1,
-    unit: ''
-  },
-  sepia: {
-    filter: 'sepia',
-    min: 0,
-    max: 1,
-    step: 0.1,
-    start: 1,
-    unit: ''
-  },
-  marvin: {
-    filter: 'invert',
-    min: 0,
-    max: 100,
-    step: 1,
-    start: 100,
-    unit: '%'
-  },
-  phobos: {
-    filter: 'blur',
-    min: 0,
-    max: 3,
-    step: 0.1,
-    start: 3,
-    unit: 'px'
-  },
-  heat: {
-    filter: 'brightness',
-    min: 1,
-    max: 3,
-    step: 0.1,
-    start: 3,
-    unit: ''
-  }
+  none: { filter: '', min: 0, max: 100, step: 1, start: 100, unit: '' },
+  chrome: { filter: 'grayscale', min: 0, max: 1, step: 0.1, start: 1, unit: '' },
+  sepia: { filter: 'sepia', min: 0, max: 1, step: 0.1, start: 1, unit: '' },
+  marvin: { filter: 'invert', min: 0, max: 100, step: 1, start: 100, unit: '%' },
+  phobos: { filter: 'blur', min: 0, max: 3, step: 0.1, start: 3, unit: 'px' },
+  heat: { filter: 'brightness', min: 1, max: 3, step: 0.1, start: 3, unit: '' },
 };
 
 let currentScale = DEFAULT_SCALE;
@@ -89,10 +47,7 @@ const onScaleBiggerClick = () => {
 };
 
 noUiSlider.create(sliderElement, {
-  range: {
-    min: 0,
-    max: 100
-  },
+  range: { min: 0, max: 100 },
   start: 100,
   step: 1,
   connect: 'lower',
@@ -102,7 +57,6 @@ effectLevel.classList.add('hidden');
 
 const updateEffect = (effectName) => {
   const effect = EFFECTS[effectName];
-
   if (effectName === 'none') {
     effectLevel.classList.add('hidden');
     previewImage.style.filter = '';
@@ -112,12 +66,9 @@ const updateEffect = (effectName) => {
 
   effectLevel.classList.remove('hidden');
   sliderElement.noUiSlider.updateOptions({
-    range: {
-      min: effect.min,
-      max: effect.max
-    },
+    range: { min: effect.min, max: effect.max },
     start: effect.start,
-    step: effect.step
+    step: effect.step,
   });
 };
 

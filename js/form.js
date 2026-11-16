@@ -1,4 +1,5 @@
 import { initEditor, resetScale, resetEffects } from './effects.js';
+import { sendData } from './api.js';
 
 const form = document.querySelector('.img-upload__form');
 const uploadInput = form.querySelector('.img-upload__input');
@@ -6,25 +7,21 @@ const uploadOverlay = form.querySelector('.img-upload__overlay');
 const cancelButton = form.querySelector('.img-upload__cancel');
 const textDescription = form.querySelector('.text__description');
 const textHashtags = form.querySelector('.text__hashtags');
-
+const submitButton = form.querySelector('.img-upload__submit');
+const previewImage = form.querySelector('.img-upload__preview img');
 const body = document.body;
 
 const validateHashtags = (value) => {
   if (!value) {
     return true;
   }
-
   const hashtags = value.trim().split(/\s+/);
-
   if (hashtags.length > 5) {
     return 'Нельзя указать больше пяти хэш-тегов';
   }
-
   const lowerCaseHashtags = hashtags.map((tag) => tag.toLowerCase());
-
   for (let i = 0; i < hashtags.length; i++) {
     const tag = hashtags[i];
-
     if (tag[0] !== '#') {
       return 'Хэш-тег должен начинаться с символа #';
     }
@@ -41,19 +38,51 @@ const validateHashtags = (value) => {
       return 'Хэш-теги не должны повторяться';
     }
   }
-
   return true;
 };
 
 const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper--error'
+  errorTextClass: 'img-upload__field-wrapper--error',
 });
 
 pristine.addValidator(textHashtags, validateHashtags);
-
 pristine.addValidator(textDescription, (value) => value.length <= 140, 'Длина комментария не может составлять больше 140 символов');
+
+const successTemplate = document.querySelector('#success').content.querySelector('.success');
+const errorTemplate = document.querySelector('#error').content.querySelector('.error');
+
+const showMessage = (template, isError = false) => {
+  const message = template.cloneNode(true);
+  body.appendChild(message);
+
+  function onEscMessage(evt) {
+    if (evt.key === 'Escape') {
+      evt.stopPropagation();
+      closeMessage();
+    }
+  }
+
+  function closeMessage() {
+    message.remove();
+    document.removeEventListener('keydown', onEscMessage);
+  }
+
+  message.addEventListener('click', (evt) => {
+    if (evt.target === message) {
+      closeMessage();
+    }
+  });
+
+  const button = message.querySelector('button');
+  button.addEventListener('click', closeMessage);
+  document.addEventListener('keydown', onEscMessage);
+
+  if (isError) {
+    document.removeEventListener('keydown', onEscKeyDown);
+  }
+};
 
 const resetForm = () => {
   form.reset();
@@ -82,13 +111,40 @@ const openForm = () => {
   document.addEventListener('keydown', onEscKeyDown);
 };
 
-uploadInput.addEventListener('change', () => {
+const onUploadInputChange = () => {
+  const file = uploadInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
   openForm();
+};
+
+form.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+  if (!pristine.validate()) {
+    return;
+  }
+
+  const formData = new FormData(form);
+
+  try {
+    submitButton.disabled = true;
+    await sendData(formData);
+    closeForm();
+    showMessage(successTemplate);
+  } catch (err) {
+    showMessage(errorTemplate, true);
+  } finally {
+    submitButton.disabled = false;
+  }
 });
 
-cancelButton.addEventListener('click', () => {
-  closeForm();
-});
+uploadInput.addEventListener('change', onUploadInputChange);
+cancelButton.addEventListener('click', closeForm);
 
 textDescription.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape') {
@@ -99,14 +155,6 @@ textDescription.addEventListener('keydown', (evt) => {
 textHashtags.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
-  }
-});
-
-form.addEventListener('submit', (evt) => {
-  const isValid = pristine.validate();
-
-  if (!isValid) {
-    evt.preventDefault();
   }
 });
 
