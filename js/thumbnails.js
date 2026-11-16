@@ -1,7 +1,8 @@
+import { openPicture } from './big-picture.js';
+
 const renderThumbnails = (photos) => {
   const picturesContainer = document.querySelector('.pictures');
   const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
-
   const fragment = document.createDocumentFragment();
 
   photos.forEach((photo) => {
@@ -13,6 +14,11 @@ const renderThumbnails = (photos) => {
 
     pictureElement.querySelector('.picture__likes').textContent = photo.likes;
     pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
+
+    pictureElement.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      openPicture(photo);
+    });
 
     fragment.appendChild(pictureElement);
   });
