@@ -1,3 +1,5 @@
+import { initEditor, resetScale, resetEffects } from './effects.js';
+
 const form = document.querySelector('.img-upload__form');
 const uploadInput = form.querySelector('.img-upload__input');
 const uploadOverlay = form.querySelector('.img-upload__overlay');
@@ -57,6 +59,8 @@ const resetForm = () => {
   form.reset();
   uploadInput.value = '';
   pristine.reset();
+  resetScale();
+  resetEffects();
 };
 
 const closeForm = () => {
@@ -105,3 +109,5 @@ form.addEventListener('submit', (evt) => {
     evt.preventDefault();
   }
 });
+
+initEditor();
