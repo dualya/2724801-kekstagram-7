@@ -57,17 +57,17 @@ const showMessage = (template, isError = false) => {
   const message = template.cloneNode(true);
   body.appendChild(message);
 
-  const closeMessage = () => {
-    message.remove();
-    document.removeEventListener('keydown', onEscMessage);
-  };
-
-  const onEscMessage = (evt) => {
+  function onEscMessage(evt) {
     if (evt.key === 'Escape') {
       evt.stopPropagation();
       closeMessage();
     }
-  };
+  }
+
+  function closeMessage() {
+    message.remove();
+    document.removeEventListener('keydown', onEscMessage);
+  }
 
   message.addEventListener('click', (evt) => {
     if (evt.target === message) {
