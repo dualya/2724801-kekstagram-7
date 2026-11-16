@@ -28,3 +28,22 @@ function extractDigits(data) {
 checkStringLength('проверяемая строка', 20);
 isPalindrome('топот');
 extractDigits('2023 год');
+
+function timeToMinutes(timeString) {
+  const [hours, minutes] = timeString.split(':').map(Number);
+
+  return (hours * 60) + minutes;
+}
+
+function isMeetingOnTime(workStart, workEnd, meetingStart, meetingDuration) {
+  const startDay = timeToMinutes(workStart);
+  const endDay = timeToMinutes(workEnd);
+
+  const startMeeting = timeToMinutes(meetingStart);
+
+  const endMeeting = startMeeting + meetingDuration;
+
+  return startMeeting >= startDay && endMeeting <= endDay;
+}
+
+isMeetingOnTime('08:00', '17:30', '14:00', 90);
