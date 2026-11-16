@@ -5,6 +5,9 @@ const renderThumbnails = (photos) => {
   const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
   const fragment = document.createDocumentFragment();
 
+  const existingPictures = picturesContainer.querySelectorAll('.picture');
+  existingPictures.forEach((picture) => picture.remove());
+
   photos.forEach((photo) => {
     const pictureElement = pictureTemplate.cloneNode(true);
 
